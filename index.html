@@ -22,7 +22,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
+
+  <!-- Critical inline rule: guarantees the lightbox / mobile menu stay hidden
+       even if an older external stylesheet is still cached by the browser. -->
+  <style>[hidden]{display:none !important;}</style>
 </head>
 
 <body>
@@ -421,6 +425,6 @@
     <button class="lightbox-nav lightbox-next" id="lb-next" aria-label="Next image">&#8250;</button>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

@@ -151,10 +151,19 @@
     lbImg.alt = innerImg ? innerImg.alt : "";
   }
 
+  // Force the lightbox closed on load. We drive visibility with an inline
+  // style so it always beats any (possibly cached) stylesheet rule.
+  if (lightbox) {
+    lightbox.hidden = true;
+    lightbox.style.display = "none";
+    lightbox.setAttribute("aria-hidden", "true");
+  }
+
   function openLightbox(index) {
     lastFocused = document.activeElement;
     showImage(index);
     lightbox.hidden = false;
+    lightbox.style.display = "flex";
     lightbox.setAttribute("aria-hidden", "false");
     document.body.classList.add("nav-open");
     lbClose.focus();
@@ -162,6 +171,7 @@
 
   function closeLightbox() {
     lightbox.hidden = true;
+    lightbox.style.display = "none";
     lightbox.setAttribute("aria-hidden", "true");
     document.body.classList.remove("nav-open");
     lbImg.src = "";
