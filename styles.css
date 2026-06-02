@@ -33,6 +33,11 @@
 /* ---------- Reset / base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* The [hidden] attribute must always win, even over later display rules
+   (e.g. .lightbox/.mobile-nav set display:flex). Without this the lightbox
+   shows on page load and can't be closed. */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
