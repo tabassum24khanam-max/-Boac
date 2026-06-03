@@ -70,18 +70,48 @@
     revealAll(menuGrid);
   }
 
-  /* Menu filter */
+  /* Menu filter + "View more" (show 4, then expand) */
+  var MENU_LIMIT = 4;
+  var currentFilter = "all";
+  var menuExpanded = false;
+  var menuMore = document.getElementById("menuMore");
+
+  function applyMenu() {
+    var dishes = Array.prototype.slice.call(document.querySelectorAll("#menuGrid .dish"));
+    var matching = 0, shown = 0;
+    dishes.forEach(function (d) {
+      var match = currentFilter === "all" || d.dataset.cat === currentFilter;
+      if (match && (menuExpanded || shown < MENU_LIMIT)) {
+        d.classList.remove("hide"); d.classList.add("in"); shown++; matching++;
+      } else {
+        d.classList.add("hide");
+        if (match) matching++;
+      }
+    });
+    if (menuMore) {
+      if (matching > MENU_LIMIT) {
+        menuMore.hidden = false;
+        menuMore.textContent = menuExpanded ? "View less" : "View more (" + (matching - MENU_LIMIT) + ")";
+      } else { menuMore.hidden = true; }
+    }
+  }
+
   var pills = document.querySelectorAll(".menu-tabs .pill");
   pills.forEach(function (p) {
     p.addEventListener("click", function () {
-      var f = p.dataset.filter;
+      currentFilter = p.dataset.filter;
+      menuExpanded = false;
       pills.forEach(function (x) { x.classList.remove("is-active"); x.setAttribute("aria-selected", "false"); });
       p.classList.add("is-active"); p.setAttribute("aria-selected", "true");
-      document.querySelectorAll("#menuGrid .dish").forEach(function (d) {
-        d.classList.toggle("hide", !(f === "all" || d.dataset.cat === f));
-      });
+      applyMenu();
     });
   });
+  if (menuMore) menuMore.addEventListener("click", function () {
+    menuExpanded = !menuExpanded;
+    applyMenu();
+    if (!menuExpanded) { var m = document.getElementById("menu"); if (m) m.scrollIntoView({ behavior: "smooth" }); }
+  });
+  applyMenu();
 
   /* ===================== RENDER FEED ===================== */
   var feedGrid = document.getElementById("feedGrid");
@@ -95,6 +125,31 @@
     }).join("");
     revealAll(feedGrid);
   }
+
+  /* Feed "View more" (show 4, then expand) */
+  var FEED_LIMIT = 4;
+  var feedExpanded = false;
+  var feedMore = document.getElementById("feedMore");
+  function applyFeed() {
+    var posts = Array.prototype.slice.call(document.querySelectorAll("#feedGrid .post"));
+    posts.forEach(function (p, i) {
+      var show = feedExpanded || i < FEED_LIMIT;
+      p.classList.toggle("hide", !show);
+      if (show) p.classList.add("in");
+    });
+    if (feedMore) {
+      if (posts.length > FEED_LIMIT) {
+        feedMore.hidden = false;
+        feedMore.textContent = feedExpanded ? "View less" : "View more (" + (posts.length - FEED_LIMIT) + ")";
+      } else { feedMore.hidden = true; }
+    }
+  }
+  if (feedMore) feedMore.addEventListener("click", function () {
+    feedExpanded = !feedExpanded;
+    applyFeed();
+    if (!feedExpanded) { var f = document.getElementById("feed"); if (f) f.scrollIntoView({ behavior: "smooth" }); }
+  });
+  applyFeed();
 
   /* reveal everything already in markup */
   revealAll(document);
