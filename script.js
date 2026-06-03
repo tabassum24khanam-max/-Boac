@@ -1,288 +1,269 @@
 /* =================================================================
-   BOAC Café — script.js
-   Vanilla JS. No dependencies.
-   Handles: sticky-nav shadow, mobile menu, scroll reveal,
-            menu filter tabs, gallery lightbox, form validation,
-            back-to-top, footer year.
+   BOAC Café — script.js  ·  vanilla, no dependencies
    ================================================================= */
 (function () {
   "use strict";
 
-  /* ---- Current year in footer ---- */
-  var yearEl = document.getElementById("year");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  /* ---- Image fallback (declared first so inline onerror can use it) ---- */
+  window.__fb = function (img, label) {
+    if (!img || img.dataset.fb) return;
+    img.dataset.fb = "1";
+    var d = document.createElement("div");
+    d.className = "img-fallback";
+    d.textContent = label || "BOAC";
+    if (img.parentNode) img.parentNode.replaceChild(d, img);
+  };
 
-  /* =============================================================
-     STICKY HEADER SHADOW
-     ============================================================= */
-  var header = document.getElementById("site-header");
-  var backToTop = document.getElementById("back-to-top");
+  /* ---- IntersectionObserver declared up front; observe() used everywhere ---- */
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var io = ("IntersectionObserver" in window) && !reduce
+    ? new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" })
+    : null;
+  function observe(node) { if (io) io.observe(node); else node && node.classList.add("in"); }
+  function revealAll(scope) { (scope || document).querySelectorAll(".reveal:not(.in)").forEach(observe); }
+
+  /* ===================== DATA ===================== */
+  var MENU = [
+    { name: "Espresso",          price: 13, cat: "coffee", img: "assets/menu/espresso.jpg",     note: "A clean, balanced double shot — the heart of the house." },
+    { name: "Flat White",        price: 17, cat: "coffee", img: "assets/menu/flatwhite.jpg",     note: "Velvety micro-foam over a rich ristretto base." },
+    { name: "V60 Single Origin", price: 24, cat: "coffee", img: "assets/menu/v60.jpg",           note: "A rotating Guji single-origin, brewed by hand." },
+    { name: "Drip of the Day",   price: 16, cat: "coffee", img: "assets/ig/post_3_DT86L3JiJGe.jpg", note: "Our cup to-go — filter coffee, fresh all day.", real: true },
+    { name: "Iced Spanish Latte",price: 21, cat: "cold",   img: "assets/menu/spanish_latte.jpg", note: "Espresso, milk & a touch of sweet — over ice." },
+    { name: "Cold Brew",         price: 20, cat: "cold",   img: "assets/menu/cold_brew.jpg",     note: "Slow-steeped 18 hours, mellow and low-acidity." },
+    { name: "Matcha Latte",      price: 23, cat: "cold",   img: "assets/menu/matcha.jpg",        note: "Ceremonial-grade matcha over cold milk." },
+    { name: "Saffron Cake",      price: 26, cat: "sweets", img: "assets/ig/post_2_DYEwQUNMAC3.jpg", note: "كيكة الزعفران — our signature, drenched in saffron cream.", tag: "Signature", real: true },
+    { name: "Blueberry Cheesecake", price: 25, cat: "sweets", img: "assets/menu/cheesecake.jpg", note: "Creamy centre, buttery base, wild-blueberry top." },
+    { name: "Butter Croissant",  price: 14, cat: "sweets", img: "assets/menu/croissant.jpg",     note: "Laminated, flaky and baked through the day." },
+    { name: "House Beans · 250g",price: 65, cat: "beans",  img: "assets/ig/post_0_DYK9u9Boykk.jpg", note: "Take BOAC home — Guji & rotating single origins.", real: true }
+  ];
+
+  // Real @boac.sa posts (newest/most-liked first). shortcode -> instagram.com/p/<code>
+  var POSTS = [
+    { code: "CvsoQuto3F9", img: "assets/ig/post_5_CvsoQuto3F9.jpg", likes: 92, cap: "Inside BOAC — cream arches & the sun logo", vid: false },
+    { code: "CvsoO_Xojqy", img: "assets/ig/post_6_CvsoO_Xojqy.jpg", likes: 63, cap: "Rattan light & arched alcoves", vid: false },
+    { code: "Cuv2LPgIz2a", img: "assets/ig/post_7_Cuv2LPgIz2a.jpg", likes: 59, cap: "Slow mornings & olive branches", vid: false },
+    { code: "Cukjvc3LBDN", img: "assets/ig/post_8_Cukjvc3LBDN.jpg", likes: 55, cap: "Terracotta jars in plaster niches", vid: false },
+    { code: "DO7Rxn2iCNt", img: "assets/ig/post_4_DO7Rxn2iCNt.jpg", likes: 17, cap: "Saudi National Day · all drinks 9.95", vid: false },
+    { code: "DT86L3JiJGe", img: "assets/ig/post_3_DT86L3JiJGe.jpg", likes: 11, cap: "A BOAC cup by the window", vid: false },
+    { code: "DYEwQUNMAC3", img: "assets/ig/post_2_DYEwQUNMAC3.jpg", likes: 10, cap: "كيكة الزعفران · saffron cake", vid: true },
+    { code: "DYK9u9Boykk", img: "assets/ig/post_0_DYK9u9Boykk.jpg", likes: 6,  cap: "Our beans, illustrated", vid: true },
+    { code: "DYHywntoHuX", img: "assets/ig/post_1_DYHywntoHuX.jpg", likes: 5,  cap: "قهوة BOAC · شرق الرياض", vid: true }
+  ];
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ===================== RENDER MENU ===================== */
+  var menuGrid = document.getElementById("menuGrid");
+  if (menuGrid) {
+    menuGrid.innerHTML = MENU.map(function (m) {
+      return '<article class="dish reveal" data-cat="' + m.cat + '">' +
+        '<div class="dish-imgwrap">' +
+          (m.tag ? '<span class="dish-tag">' + esc(m.tag) + "</span>" : "") +
+          '<img src="' + m.img + '" alt="' + esc(m.name) + '" loading="lazy" decoding="async" onerror="window.__fb&&window.__fb(this,\'' + esc(m.name.charAt(0)) + '\')">' +
+        "</div>" +
+        '<div class="dish-body"><div class="dish-top"><h3>' + esc(m.name) + "</h3>" +
+        '<span class="dish-price">' + m.price + " <small>SAR</small></span></div>" +
+        "<p>" + esc(m.note) + "</p></div></article>";
+    }).join("");
+    revealAll(menuGrid);
+  }
+
+  /* Menu filter */
+  var pills = document.querySelectorAll(".menu-tabs .pill");
+  pills.forEach(function (p) {
+    p.addEventListener("click", function () {
+      var f = p.dataset.filter;
+      pills.forEach(function (x) { x.classList.remove("is-active"); x.setAttribute("aria-selected", "false"); });
+      p.classList.add("is-active"); p.setAttribute("aria-selected", "true");
+      document.querySelectorAll("#menuGrid .dish").forEach(function (d) {
+        d.classList.toggle("hide", !(f === "all" || d.dataset.cat === f));
+      });
+    });
+  });
+
+  /* ===================== RENDER FEED ===================== */
+  var feedGrid = document.getElementById("feedGrid");
+  if (feedGrid) {
+    feedGrid.innerHTML = POSTS.map(function (p) {
+      return '<a class="post reveal" href="https://www.instagram.com/p/' + p.code + '/" target="_blank" rel="noopener" aria-label="View this post on Instagram">' +
+        '<img src="' + p.img + '" alt="' + esc(p.cap) + '" loading="lazy" decoding="async" onerror="window.__fb&&window.__fb(this,\'BOAC\')">' +
+        (p.vid ? '<span class="post-vid" aria-hidden="true">&#9658;</span>' : "") +
+        '<span class="post-ov"><span class="post-likes">&#9829; ' + p.likes + "</span>" +
+        '<span class="post-cap">' + esc(p.cap) + "</span></span></a>";
+    }).join("");
+    revealAll(feedGrid);
+  }
+
+  /* reveal everything already in markup */
+  revealAll(document);
+
+  /* ===================== NAV: scroll state + scrollspy ===================== */
+  var nav = document.getElementById("nav");
+  var progress = document.getElementById("scrollProgress");
+  var toTop = document.getElementById("toTop");
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-links a"));
+  var sections = navLinks.map(function (a) { return document.querySelector(a.getAttribute("href")); });
 
   function onScroll() {
-    var y = window.scrollY || window.pageYOffset;
-    if (header) header.classList.toggle("scrolled", y > 8);
-    if (backToTop) {
-      backToTop.hidden = false;
-      backToTop.classList.toggle("show", y > 600);
+    var y = window.scrollY || 0;
+    if (nav) nav.classList.toggle("scrolled", y > 12);
+    if (toTop) { toTop.hidden = false; toTop.classList.toggle("show", y > 600); }
+    if (progress) {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
     }
+    // scrollspy
+    var mid = y + window.innerHeight * 0.35, cur = -1;
+    sections.forEach(function (s, i) { if (s && s.offsetTop <= mid) cur = i; });
+    navLinks.forEach(function (a, i) { a.classList.toggle("active", i === cur); });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+  if (toTop) toTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
 
-  if (backToTop) {
-    backToTop.addEventListener("click", function () {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+  /* ===================== THEME TOGGLE ===================== */
+  var meta = document.getElementById("metaTheme");
+  var themeBtn = document.getElementById("themeToggle");
+  function applyTheme(night) {
+    document.body.classList.toggle("night", night);
+    if (meta) meta.setAttribute("content", night ? "#1c241e" : "#e9dcc6");
   }
+  var saved;
+  try { saved = localStorage.getItem("boac-theme"); } catch (e) {}
+  applyTheme(saved === "night");
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    var night = !document.body.classList.contains("night");
+    applyTheme(night);
+    try { localStorage.setItem("boac-theme", night ? "night" : "day"); } catch (e) {}
+  });
 
-  /* =============================================================
-     MOBILE NAV (hamburger / slide-in)
-     ============================================================= */
-  var hamburger = document.getElementById("hamburger");
-  var mobileNav = document.getElementById("mobile-nav");
-  var overlay = document.getElementById("mobile-overlay");
-
-  function openMenu() {
-    mobileNav.hidden = false;
-    overlay.hidden = false;
-    // next frame so the transition runs
-    requestAnimationFrame(function () {
-      mobileNav.classList.add("show");
-      overlay.classList.add("show");
-    });
-    hamburger.classList.add("open");
-    hamburger.setAttribute("aria-expanded", "true");
-    document.body.classList.add("nav-open");
-  }
-
+  /* ===================== MOBILE MENU ===================== */
+  var burger = document.getElementById("burger");
+  var mMenu = document.getElementById("mobileMenu");
   function closeMenu() {
-    mobileNav.classList.remove("show");
-    overlay.classList.remove("show");
-    hamburger.classList.remove("open");
-    hamburger.setAttribute("aria-expanded", "false");
-    document.body.classList.remove("nav-open");
-    // hide after the transition finishes
-    window.setTimeout(function () {
-      if (!mobileNav.classList.contains("show")) {
-        mobileNav.hidden = true;
-        overlay.hidden = true;
-      }
-    }, 350);
+    if (!mMenu) return;
+    mMenu.classList.remove("show");
+    burger.classList.remove("open");
+    burger.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
+    setTimeout(function () { if (!mMenu.classList.contains("show")) mMenu.hidden = true; }, 300);
+  }
+  function openMenu() {
+    mMenu.hidden = false;
+    requestAnimationFrame(function () { mMenu.classList.add("show"); });
+    burger.classList.add("open");
+    burger.setAttribute("aria-expanded", "true");
+    document.body.classList.add("menu-open");
+  }
+  if (burger && mMenu) {
+    burger.addEventListener("click", function () {
+      mMenu.classList.contains("show") ? closeMenu() : openMenu();
+    });
+    mMenu.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", closeMenu); });
   }
 
-  if (hamburger && mobileNav && overlay) {
-    hamburger.addEventListener("click", function () {
-      if (mobileNav.classList.contains("show")) closeMenu();
-      else openMenu();
-    });
-    overlay.addEventListener("click", closeMenu);
-    // close on any link tap inside the menu
-    mobileNav.querySelectorAll("a").forEach(function (a) {
-      a.addEventListener("click", closeMenu);
-    });
-    // close on Escape
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && mobileNav.classList.contains("show")) closeMenu();
-    });
+  /* ===================== RESERVE MODAL ===================== */
+  var modal = document.getElementById("reserveModal");
+  var form = document.getElementById("reserveForm");
+  var formOk = document.getElementById("formOk");
+  var lastFocus = null;
+  var WHATSAPP = "966500000000"; // TODO: replace with BOAC's real WhatsApp number
+
+  function openModal() {
+    lastFocus = document.activeElement;
+    closeMenu();
+    modal.hidden = false;
+    document.body.classList.add("menu-open");
+    var f = modal.querySelector("input");
+    if (f) setTimeout(function () { f.focus(); }, 50);
+    document.addEventListener("keydown", escClose);
   }
-
-  /* =============================================================
-     SCROLL REVEAL (IntersectionObserver)
-     ============================================================= */
-  var revealEls = document.querySelectorAll(".reveal");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (reduceMotion || !("IntersectionObserver" in window)) {
-    revealEls.forEach(function (el) { el.classList.add("in"); });
-  } else {
-    var io = new IntersectionObserver(function (entries, obs) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("in");
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-    revealEls.forEach(function (el) { io.observe(el); });
+  function closeModal() {
+    modal.hidden = true;
+    document.body.classList.remove("menu-open");
+    document.removeEventListener("keydown", escClose);
+    if (lastFocus) lastFocus.focus();
   }
+  function escClose(e) { if (e.key === "Escape") closeModal(); }
 
-  /* =============================================================
-     MENU FILTER TABS
-     ============================================================= */
-  var tabs = document.querySelectorAll(".menu-tabs .tab");
-  var cards = document.querySelectorAll(".menu-card");
-
-  tabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      var filter = tab.getAttribute("data-filter");
-      tabs.forEach(function (t) {
-        t.classList.remove("is-active");
-        t.setAttribute("aria-selected", "false");
-      });
-      tab.classList.add("is-active");
-      tab.setAttribute("aria-selected", "true");
-
-      cards.forEach(function (card) {
-        var show = filter === "all" || card.getAttribute("data-cat") === filter;
-        card.classList.toggle("hide", !show);
-      });
-    });
+  document.querySelectorAll("[data-reserve]").forEach(function (b) {
+    b.addEventListener("click", openModal);
+  });
+  if (modal) modal.querySelectorAll("[data-close]").forEach(function (b) {
+    b.addEventListener("click", closeModal);
   });
 
-  /* =============================================================
-     GALLERY LIGHTBOX
-     ============================================================= */
-  var galleryItems = Array.prototype.slice.call(document.querySelectorAll(".gallery-item"));
-  var lightbox = document.getElementById("lightbox");
-  var lbImg = document.getElementById("lb-img");
-  var lbClose = document.getElementById("lb-close");
-  var lbPrev = document.getElementById("lb-prev");
-  var lbNext = document.getElementById("lb-next");
-  var currentIndex = 0;
-  var lastFocused = null;
-
-  function showImage(index) {
-    if (index < 0) index = galleryItems.length - 1;
-    if (index >= galleryItems.length) index = 0;
-    currentIndex = index;
-    var item = galleryItems[index];
-    lbImg.src = item.getAttribute("data-full");
-    var innerImg = item.querySelector("img");
-    lbImg.alt = innerImg ? innerImg.alt : "";
-  }
-
-  // Force the lightbox closed on load. We drive visibility with an inline
-  // style so it always beats any (possibly cached) stylesheet rule.
-  if (lightbox) {
-    lightbox.hidden = true;
-    lightbox.style.display = "none";
-    lightbox.setAttribute("aria-hidden", "true");
-  }
-
-  function openLightbox(index) {
-    lastFocused = document.activeElement;
-    showImage(index);
-    lightbox.hidden = false;
-    lightbox.style.display = "flex";
-    lightbox.setAttribute("aria-hidden", "false");
-    document.body.classList.add("nav-open");
-    lbClose.focus();
-  }
-
-  function closeLightbox() {
-    lightbox.hidden = true;
-    lightbox.style.display = "none";
-    lightbox.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("nav-open");
-    lbImg.src = "";
-    if (lastFocused) lastFocused.focus();
-  }
-
-  galleryItems.forEach(function (item, i) {
-    item.addEventListener("click", function () { openLightbox(i); });
-  });
-
-  if (lightbox) {
-    lbClose.addEventListener("click", closeLightbox);
-    lbPrev.addEventListener("click", function () { showImage(currentIndex - 1); });
-    lbNext.addEventListener("click", function () { showImage(currentIndex + 1); });
-    lightbox.addEventListener("click", function (e) {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (lightbox.hidden) return;
-      if (e.key === "Escape") closeLightbox();
-      else if (e.key === "ArrowLeft") showImage(currentIndex - 1);
-      else if (e.key === "ArrowRight") showImage(currentIndex + 1);
-    });
-
-    /* Swipe support on touch devices */
-    var touchStartX = 0;
-    lightbox.addEventListener("touchstart", function (e) {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    lightbox.addEventListener("touchend", function (e) {
-      var dx = e.changedTouches[0].screenX - touchStartX;
-      if (Math.abs(dx) > 50) showImage(currentIndex + (dx < 0 ? 1 : -1));
-    }, { passive: true });
-  }
-
-  /* =============================================================
-     RESERVATION FORM — validation + WhatsApp handoff
-     ============================================================= */
-  var form = document.getElementById("reserve-form");
-  var success = document.getElementById("form-success");
-  // TODO: replace with the café's real WhatsApp number (digits only, incl. country code)
-  var WHATSAPP_NUMBER = "966500000000";
-
-  function setError(name, msg) {
+  /* form validation + WhatsApp handoff */
+  function setErr(name, msg) {
     var input = form.elements[name];
-    var errEl = form.querySelector('.error[data-for="' + name + '"]');
+    var e = form.querySelector('.err[data-for="' + name + '"]');
     if (input) input.classList.toggle("invalid", !!msg);
-    if (errEl) errEl.textContent = msg || "";
+    if (e) e.textContent = msg || "";
   }
-
-  function validate() {
-    var ok = true;
-    var name = form.elements["name"].value.trim();
-    var phone = form.elements["phone"].value.trim();
-    var date = form.elements["date"].value;
-    var party = form.elements["party"].value;
-
-    if (!name) { setError("name", "Please enter your name."); ok = false; }
-    else setError("name", "");
-
-    // accept +, spaces, digits; need at least 7 digits
-    var digits = phone.replace(/\D/g, "");
-    if (digits.length < 7) { setError("phone", "Enter a valid phone number."); ok = false; }
-    else setError("phone", "");
-
-    if (!date) { setError("date", "Pick a date and time."); ok = false; }
-    else setError("date", "");
-
-    if (!party || Number(party) < 1) { setError("party", "Party size must be at least 1."); ok = false; }
-    else setError("party", "");
-
-    return ok;
-  }
-
   if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (!validate()) {
-        // focus the first invalid field
-        var firstInvalid = form.querySelector(".invalid");
-        if (firstInvalid) firstInvalid.focus();
-        return;
-      }
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var ok = true;
+      var name = form.elements.name.value.trim();
+      var phone = form.elements.phone.value.trim();
+      var date = form.elements.date.value;
+      var party = form.elements.party.value;
+      if (!name) { setErr("name", "Please enter your name."); ok = false; } else setErr("name", "");
+      if (phone.replace(/\D/g, "").length < 7) { setErr("phone", "Enter a valid phone number."); ok = false; } else setErr("phone", "");
+      if (!date) { setErr("date", "Pick a date & time."); ok = false; } else setErr("date", "");
+      if (!party || Number(party) < 1) { setErr("party", "At least 1 guest."); ok = false; } else setErr("party", "");
+      if (!ok) { var bad = form.querySelector(".invalid"); if (bad) bad.focus(); return; }
 
-      var name = form.elements["name"].value.trim();
-      var phone = form.elements["phone"].value.trim();
-      var date = form.elements["date"].value;
-      var party = form.elements["party"].value;
-      var message = form.elements["message"].value.trim();
-
-      var text =
-        "Hello BOAC Café! I'd like to reserve a table.\n" +
-        "Name: " + name + "\n" +
-        "Phone: " + phone + "\n" +
-        "Date/Time: " + date.replace("T", " ") + "\n" +
-        "Party size: " + party +
-        (message ? "\nNote: " + message : "");
-
-      var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
-
-      if (success) success.hidden = false;
-      // open WhatsApp in a new tab with the prefilled message
-      window.open(url, "_blank", "noopener");
+      var text = "Hello BOAC! I'd like to reserve a table.\n" +
+        "Name: " + name + "\nPhone: " + phone + "\nDate/Time: " + date.replace("T", " ") +
+        "\nParty: " + party + (form.elements.message.value.trim() ? "\nNote: " + form.elements.message.value.trim() : "");
+      if (formOk) formOk.hidden = false;
+      window.open("https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text), "_blank", "noopener");
       form.reset();
     });
-
-    // clear an error as soon as the user fixes the field
-    form.querySelectorAll("input, textarea").forEach(function (el) {
-      el.addEventListener("input", function () {
-        if (el.classList.contains("invalid")) setError(el.name, "");
-      });
+    form.querySelectorAll("input,textarea").forEach(function (el) {
+      el.addEventListener("input", function () { if (el.classList.contains("invalid")) setErr(el.name, ""); });
     });
   }
+
+  /* ===================== HERO: per-word reveal ===================== */
+  var heroTitle = document.getElementById("heroTitle");
+  if (heroTitle && !reduce) {
+    var html = heroTitle.innerHTML; // keep <em>
+    // wrap top-level text words in .w spans, preserving <em>…</em>
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    var idx = 0;
+    function wrapNode(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (/^\s+$/.test(part) || part === "") { frag.appendChild(document.createTextNode(part)); return; }
+            var s = document.createElement("span");
+            s.className = "w"; s.textContent = part;
+            s.style.animationDelay = (idx++ * 0.09) + "s";
+            frag.appendChild(s);
+          });
+          node.replaceChild(frag, n);
+        } else if (n.nodeType === 1) {
+          n.classList.add("w");
+          n.style.display = "inline-block";
+          n.style.animationDelay = (idx++ * 0.09) + "s";
+        }
+      });
+    }
+    wrapNode(tmp);
+    heroTitle.innerHTML = tmp.innerHTML;
+  }
+
+  /* ===================== STATUS BADGE (24h = always open) ===================== */
+  var badge = document.getElementById("statusBadge");
+  if (badge) badge.childNodes[badge.childNodes.length - 1].nodeValue = " Open now · 24 hours";
+
+  /* ===================== FOOTER YEAR ===================== */
+  var y = document.getElementById("year");
+  if (y) y.textContent = new Date().getFullYear();
 })();
