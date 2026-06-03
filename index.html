@@ -4,427 +4,269 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ===== SEO ===== -->
-  <title>BOAC Café · Specialty Coffee in Riyadh — Open 24 Hours</title>
-  <meta name="description" content="BOAC Café — specialty coffee & fresh bakes on Khurais Road, Al Rawdah, Riyadh. Open 24 hours. House classics, signature drinks and a warm, aviation-inspired space." />
-  <meta name="theme-color" content="#0f1f3d" />
+  <title>BOAC Café · Because of a cup — Specialty Coffee, Riyadh</title>
+  <meta name="description" content="BOAC — Because of a cup. Specialty coffee, saffron cake & slow mornings in Al Rawdah, Khurais Road, Riyadh. Open 24 hours." />
+  <meta name="theme-color" content="#e9dcc6" id="metaTheme" />
 
-  <!-- ===== Open Graph / social sharing ===== -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="BOAC Café · Specialty Coffee in Riyadh" />
-  <meta property="og:description" content="Specialty coffee & fresh bakes on Khurais Road, Riyadh. Open 24 hours." />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=70" />
-  <meta property="og:locale" content="en_US" />
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta property="og:title" content="BOAC Café · Because of a cup" />
+  <meta property="og:description" content="Specialty coffee & saffron cake in Al Rawdah, Riyadh. Open 24 hours." />
+  <meta property="og:image" content="assets/ig/post_5_CvsoQuto3F9.jpg" />
 
-  <!-- ===== Fonts ===== -->
+  <link rel="icon" href="assets/ig/profile.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@300;400;500;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=3" />
-
-  <!-- Critical inline rule: guarantees the lightbox / mobile menu stay hidden
-       even if an older external stylesheet is still cached by the browser. -->
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <!-- Critical: keep dialogs/menus hidden even if external CSS is cached -->
   <style>[hidden]{display:none !important;}</style>
 </head>
 
 <body>
-  <!-- Skip link for keyboard / screen-reader users -->
-  <a class="skip-link" href="#hero">Skip to content</a>
+  <!-- ============ LOADER ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-mark">
+      <span class="loader-sun">&#10042;</span>
+      <span class="loader-word">BOAC</span>
+      <span class="loader-line"></span>
+      <span class="loader-tag">Because of a cup</span>
+    </div>
+  </div>
+  <!-- Loader fail-safe: hide it no matter what, so JS errors can't blank the page -->
+  <script>(function(){var l=document.getElementById('loader');var h=function(){l&&l.classList.add('hide')};setTimeout(h,1700);addEventListener('error',h);addEventListener('load',function(){setTimeout(h,500)});})();</script>
 
-  <!-- ============================================================= -->
-  <!-- HEADER / NAVBAR                                                -->
-  <!-- ============================================================= -->
-  <header class="site-header" id="site-header">
-    <div class="container header-inner">
-      <a href="#hero" class="brand" aria-label="BOAC Café home">
-        <span class="brand-mark" aria-hidden="true">&#9992;</span>
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <!-- Film-grain texture -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#home">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#home" class="brand" aria-label="BOAC Café — home">
+        <span class="brand-sun" aria-hidden="true">&#10042;</span>
         <span class="brand-text">
           <span class="brand-name">BOAC</span>
-          <span class="brand-sub">Café · Riyadh</span>
+          <span class="brand-sub">بواك · Because of a cup</span>
         </span>
       </a>
 
-      <!-- Desktop nav -->
-      <nav class="nav" id="primary-nav" aria-label="Primary">
-        <ul class="nav-list">
-          <li><a href="#hero">Home</a></li>
-          <li><a href="#menu">Menu</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#visit">Visit Us</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-        <a href="tel:+966500000000" class="btn btn-accent nav-cta">Call Us</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#about">Story</a>
+        <a href="#menu">Menu</a>
+        <a href="#feed">Feed</a>
+        <a href="#visit">Visit</a>
       </nav>
 
-      <!-- Hamburger (mobile) -->
-      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle light and dark" title="Toggle theme">
+          <span class="ti-sun" aria-hidden="true">&#9728;</span>
+          <span class="ti-moon" aria-hidden="true">&#9789;</span>
+        </button>
+        <button class="btn btn-accent reserve-open" data-reserve>Reserve</button>
+        <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Mobile slide-in nav -->
-  <div class="mobile-nav-overlay" id="mobile-overlay" hidden></div>
-  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" hidden>
-    <ul>
-      <li><a href="#hero">Home</a></li>
-      <li><a href="#menu">Menu</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#visit">Visit Us</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <a href="tel:+966500000000" class="btn btn-accent btn-full">Call Us</a>
-  </nav>
+  <!-- Mobile overlay menu -->
+  <div class="m-menu" id="mobileMenu" hidden>
+    <nav aria-label="Mobile">
+      <a href="#about">Story</a>
+      <a href="#menu">Menu</a>
+      <a href="#feed">Feed</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <button class="btn btn-accent btn-full reserve-open" data-reserve>Reserve a table</button>
+    <div class="m-menu-meta">
+      <span>Open 24 hours</span><span>الروضة · طريق خريص</span>
+    </div>
+  </div>
 
   <main>
-    <!-- ============================================================= -->
-    <!-- HERO                                                           -->
-    <!-- ============================================================= -->
-    <section class="hero" id="hero">
-      <div class="hero-bg" aria-hidden="true"></div>
-      <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="container hero-content reveal">
-        <p class="hero-eyebrow">Specialty Coffee · Est. Riyadh</p>
-        <h1 class="hero-title">BOAC Café</h1>
-        <p class="hero-tagline">Specialty coffee &amp; fresh bakes in the heart of Riyadh — brewed around the clock.</p>
-        <div class="hero-actions">
-          <a href="#menu" class="btn btn-accent">View Menu</a>
-          <a href="#visit" class="btn btn-ghost">Find Us</a>
-        </div>
-        <p class="hero-badge"><span class="dot"></span> Open 24 hours · Khurais Road</p>
-      </div>
-    </section>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="home">
+      <img class="hero-media" src="assets/ig/post_5_CvsoQuto3F9.jpg" alt="The warm cream-and-wood interior of BOAC Café with the glowing sun logo" onerror="window.__fb&&window.__fb(this,'BOAC')" />
+      <div class="hero-scrim" aria-hidden="true"></div>
 
-    <!-- ============================================================= -->
-    <!-- HIGHLIGHTS                                                     -->
-    <!-- ============================================================= -->
-    <section class="highlights" aria-label="Why BOAC">
-      <div class="container highlights-grid">
-        <div class="highlight reveal">
-          <span class="highlight-icon" aria-hidden="true">&#9749;</span>
-          <h3>Specialty Roasts</h3>
-          <p>Carefully sourced beans, dialed in daily by our baristas.</p>
+      <div class="hero-inner">
+        <p class="eyebrow light">Specialty Coffee · Al Rawdah, Riyadh</p>
+        <h1 class="hero-title" id="heroTitle"><em>Because</em> of a cup</h1>
+        <p class="hero-lead">Sculpted espresso, saffron cake and slow mornings — poured around the clock in the heart of Khurais Road.</p>
+        <div class="hero-cta">
+          <a href="#menu" class="btn btn-accent btn-lg">Explore the menu</a>
+          <button class="btn btn-ghost btn-lg reserve-open" data-reserve>Reserve a table</button>
         </div>
-        <div class="highlight reveal">
-          <span class="highlight-icon" aria-hidden="true">&#127857;</span>
-          <h3>Fresh Bakes</h3>
-          <p>Desserts and pastries baked through the day, every day.</p>
-        </div>
-        <div class="highlight reveal">
-          <span class="highlight-icon" aria-hidden="true">&#128337;</span>
-          <h3>Open 24 Hours</h3>
-          <p>Early flight or late night — the door is always open.</p>
-        </div>
-        <div class="highlight reveal">
-          <span class="highlight-icon" aria-hidden="true">&#128241;</span>
-          <h3>Order Anywhere</h3>
-          <p>Dine in or order via Jahez, Keeta, Noon Food &amp; more.</p>
+        <div class="hero-meta">
+          <span class="status-badge" id="statusBadge"><span class="dot"></span> Open now · 24 hours</span>
+          <span class="meta-dot">·</span>
+          <span>الروضة · طريق خريص</span>
+          <span class="meta-dot">·</span>
+          <a href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">@boac.sa</a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- ABOUT                                                          -->
-    <!-- ============================================================= -->
-    <section class="about section" id="about">
-      <div class="container about-grid">
-        <div class="about-media reveal">
-          <img
-            src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=70"
-            alt="Cozy seating and warm lighting inside BOAC Café"
-            loading="lazy" width="900" height="1100" />
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Specialty Coffee</span><i>&#10042;</i><span>كيكة الزعفران</span><i>&#10042;</i><span>Saffron Cake</span><i>&#10042;</i><span>Open 24 Hours</span><i>&#10042;</i><span>Because of a cup</span><i>&#10042;</i>
+        <span>Specialty Coffee</span><i>&#10042;</i><span>كيكة الزعفران</span><i>&#10042;</i><span>Saffron Cake</span><i>&#10042;</i><span>Open 24 Hours</span><i>&#10042;</i><span>Because of a cup</span><i>&#10042;</i>
+      </div>
+    </div>
+
+    <!-- ============ STORY ============ -->
+    <section class="story section" id="about">
+      <div class="wrap story-grid">
+        <div class="story-media reveal">
+          <img src="assets/ig/post_8_Cukjvc3LBDN.jpg" alt="Cream plaster alcoves with terracotta jugs and a tall arched mirror inside BOAC" loading="lazy" decoding="async" onerror="window.__fb&&window.__fb(this,'BOAC')" />
+          <span class="stamp" aria-hidden="true">
+            <svg viewBox="0 0 120 120"><defs><path id="circlePath" d="M60,60 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/></defs>
+            <text><textPath href="#circlePath">· SPECIALTY COFFEE · AL RAWDAH · RIYADH </textPath></text></svg>
+            <span class="stamp-sun">&#10042;</span>
+          </span>
         </div>
-        <div class="about-text reveal">
+        <div class="story-copy reveal">
           <p class="eyebrow">Our Story</p>
-          <h2>A boarding gate for coffee lovers</h2>
-          <p>
-            BOAC Café takes its name and spirit from the golden age of travel — a place where
-            every cup feels like a small departure. Tucked on Khurais Road in Al&nbsp;Rawdah,
-            we pour specialty coffee for early risers, night owls and everyone in between.
-          </p>
-          <p>
-            Our baristas brew with intent, our kitchen bakes fresh through the day, and our
-            room is built for lingering — whether you're catching up with friends or catching
-            up on work. No rush, no last call.
-          </p>
-          <a href="#visit" class="btn btn-dark">Plan your visit</a>
+          <h2>A quiet room,<br><em>built around a cup.</em></h2>
+          <p class="pull">"بواك" — because the right cup can change an entire morning.</p>
+          <p>Tucked along Khurais Road in Al&nbsp;Rawdah, BOAC is part coffee bar, part calm — cream plaster arches, warm wood, rattan light and the smell of fresh espresso. We roast for clarity, bake fresh through the day, and never close the door.</p>
+          <div class="stats">
+            <div class="stat"><span class="stat-num">24</span><span class="stat-label">Hours, every day</span></div>
+            <div class="stat"><span class="stat-num">1.5k+</span><span class="stat-label">On Instagram</span></div>
+            <div class="stat"><span class="stat-num">Guji</span><span class="stat-label">Single-origin beans</span></div>
+            <div class="stat"><span class="stat-num">&#10042;</span><span class="stat-label">Because of a cup</span></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- MENU                                                           -->
-    <!-- ============================================================= -->
-    <section class="menu section" id="menu">
-      <div class="container">
+    <!-- ============ MENU ============ -->
+    <section class="menu section alt" id="menu">
+      <div class="wrap">
         <div class="section-head reveal">
           <p class="eyebrow">The Menu</p>
-          <h2>Brewed, poured &amp; baked</h2>
-          <p class="section-lead">
-            A taste of what's on the board. Full beverage &amp; dessert menus available in-store
-            and on our delivery partners.
-          </p>
+          <h2>What we pour &amp; bake</h2>
+          <p class="lead">A taste of the board — espresso classics, cold pours and our saffron cake. Full menu in-store and on delivery.</p>
         </div>
 
-        <!-- Category filter tabs -->
         <div class="menu-tabs reveal" role="tablist" aria-label="Menu categories">
-          <button class="tab is-active" role="tab" aria-selected="true" data-filter="all">All</button>
-          <button class="tab" role="tab" aria-selected="false" data-filter="hot">Hot Coffee</button>
-          <button class="tab" role="tab" aria-selected="false" data-filter="cold">Cold Drinks</button>
-          <button class="tab" role="tab" aria-selected="false" data-filter="tea">Tea &amp; More</button>
-          <button class="tab" role="tab" aria-selected="false" data-filter="dessert">Desserts</button>
+          <button class="pill is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="pill" data-filter="coffee" role="tab" aria-selected="false">Coffee</button>
+          <button class="pill" data-filter="cold" role="tab" aria-selected="false">Cold</button>
+          <button class="pill" data-filter="sweets" role="tab" aria-selected="false">Sweets</button>
+          <button class="pill" data-filter="beans" role="tab" aria-selected="false">Beans</button>
         </div>
 
-        <!-- Menu grid. Prices in SAR. EDIT THESE to match the real board. -->
-        <div class="menu-grid" id="menu-grid">
-
-          <article class="menu-card reveal" data-cat="hot">
-            <div class="menu-card-head"><h3>Espresso</h3><span class="price">12</span></div>
-            <p>A clean, balanced double shot — the heart of the house.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="hot">
-            <div class="menu-card-head"><h3>Flat White</h3><span class="price">17</span></div>
-            <p>Velvety micro-foam over a rich ristretto base.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="hot">
-            <div class="menu-card-head"><h3>Spanish Latte</h3><span class="price">19</span></div>
-            <p>Espresso, steamed milk and a touch of sweet condensed milk.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="cold">
-            <div class="menu-card-head"><h3>Iced Spanish Latte</h3><span class="price">21</span></div>
-            <p>Our signature, over ice — smooth, sweet and chilled.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="cold">
-            <div class="menu-card-head"><h3>Cold Brew</h3><span class="price">20</span></div>
-            <p>Slow-steeped 18 hours for a mellow, low-acidity cup.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="cold">
-            <div class="menu-card-head"><h3>Iced Matcha</h3><span class="price">22</span></div>
-            <p>Ceremonial-grade matcha whisked over cold milk.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="tea">
-            <div class="menu-card-head"><h3>V60 Pour Over</h3><span class="price">24</span></div>
-            <p>A rotating single-origin, brewed by hand to order.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="tea">
-            <div class="menu-card-head"><h3>Saudi Tea</h3><span class="price">10</span></div>
-            <p>Fragrant black tea with mint — the local classic.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="tea">
-            <div class="menu-card-head"><h3>Hot Chocolate</h3><span class="price">18</span></div>
-            <p>Dark, glossy and topped with steamed milk.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="dessert">
-            <div class="menu-card-head"><h3>Pistachio Cake</h3><span class="price">26</span></div>
-            <p>Moist sponge layered with pistachio cream.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="dessert">
-            <div class="menu-card-head"><h3>Butter Croissant</h3><span class="price">14</span></div>
-            <p>Laminated, flaky and baked fresh through the day.</p>
-          </article>
-
-          <article class="menu-card reveal" data-cat="dessert">
-            <div class="menu-card-head"><h3>Basque Cheesecake</h3><span class="price">25</span></div>
-            <p>Burnt-top, creamy centre — a house favourite.</p>
-          </article>
-
-        </div>
-
-        <p class="menu-note reveal">Prices in SAR. Menu items are samples — swap for the live board.</p>
+        <div class="menu-grid" id="menuGrid"><!-- rendered by JS --></div>
+        <p class="menu-note">Prices in SAR · sample board, tap a category to filter</p>
 
         <div class="order-strip reveal">
-          <span>Order delivery:</span>
+          <span>Order delivery</span>
           <a href="https://www.jahez.net/" target="_blank" rel="noopener">Jahez</a>
           <a href="https://hungerstation.com/" target="_blank" rel="noopener">HungerStation</a>
           <a href="https://food.noon.com/" target="_blank" rel="noopener">Noon Food</a>
-          <a href="https://thechefz.co/" target="_blank" rel="noopener">The Chefz</a>
+          <a href="https://linktr.ee/Boac.sa" target="_blank" rel="noopener">More</a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- GALLERY                                                        -->
-    <!-- ============================================================= -->
-    <section class="gallery section" id="gallery">
-      <div class="container">
-        <div class="section-head reveal">
-          <p class="eyebrow">Gallery</p>
-          <h2>Inside BOAC</h2>
+    <!-- ============ FEED (mini Instagram) ============ -->
+    <section class="feed section" id="feed">
+      <div class="wrap">
+        <div class="section-head center reveal">
+          <p class="eyebrow">Captured</p>
+          <h2>Live from <span class="hl">@boac.sa</span></h2>
         </div>
-        <div class="gallery-grid">
-          <!-- data-full points to a larger version for the lightbox -->
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=600&q=65" alt="Latte art in a white cup" loading="lazy" />
-          </button>
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=600&q=65" alt="Barista pouring an espresso" loading="lazy" />
-          </button>
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=600&q=65" alt="Freshly baked desserts" loading="lazy" />
-          </button>
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1559496417-e7f25cb247f3?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1559496417-e7f25cb247f3?auto=format&fit=crop&w=600&q=65" alt="Cozy café interior seating" loading="lazy" />
-          </button>
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=65" alt="Iced coffee on a table" loading="lazy" />
-          </button>
-          <button class="gallery-item reveal" data-full="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=1400&q=75">
-            <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=600&q=65" alt="Coffee cup with beans" loading="lazy" />
-          </button>
+
+        <div class="ig-card reveal">
+          <div class="ig-head">
+            <img class="ig-avatar" src="assets/ig/profile.jpg" alt="BOAC profile picture" loading="lazy" onerror="window.__fb&&window.__fb(this,'B')" />
+            <div class="ig-id">
+              <strong>boac.sa</strong>
+              <span>الرياض · الروضة · طريق خريص</span>
+            </div>
+            <a class="ig-follow" href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">View profile</a>
+          </div>
+          <div class="ig-substats"><span><b>10</b> posts</span><span><b>1,590</b> followers</span><span><b>&#10042;</b> Because of a cup</span></div>
+        </div>
+
+        <div class="feed-grid" id="feedGrid"><!-- rendered by JS --></div>
+
+        <div class="feed-foot reveal">
+          <a class="btn btn-dark" href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">Follow on Instagram</a>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- VISIT US                                                       -->
-    <!-- ============================================================= -->
-    <section class="visit section" id="visit">
-      <div class="container visit-grid">
+    <!-- ============ VISIT ============ -->
+    <section class="visit section alt" id="visit">
+      <div class="wrap visit-grid">
         <div class="visit-info reveal">
           <p class="eyebrow">Visit Us</p>
-          <h2>Find your gate</h2>
+          <h2>Find the cup.</h2>
           <ul class="visit-list">
-            <li>
-              <span class="visit-icon" aria-hidden="true">&#128205;</span>
-              <div><strong>Location</strong><br />Khurais Road, Al Rawdah, Riyadh, Saudi Arabia</div>
-            </li>
-            <li>
-              <span class="visit-icon" aria-hidden="true">&#128336;</span>
-              <div><strong>Hours</strong><br />Open 24 hours · 7 days a week</div>
-            </li>
-            <li>
-              <span class="visit-icon" aria-hidden="true">&#128222;</span>
-              <div><strong>Call</strong><br /><a href="tel:+966500000000">+966 50 000 0000</a> <em>(update)</em></div>
-            </li>
-            <li>
-              <span class="visit-icon" aria-hidden="true">&#128241;</span>
-              <div><strong>Follow</strong><br />
-                <a href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">Instagram</a> ·
-                <a href="https://linktr.ee/Boac.sa" target="_blank" rel="noopener">TikTok</a>
-              </div>
-            </li>
+            <li><span aria-hidden="true">&#9678;</span><div><strong>Location</strong><br>Al Rawdah, Khurais Road, Riyadh, Saudi Arabia<br><span class="ar">الروضة · طريق خريص · الرياض</span></div></li>
+            <li><span aria-hidden="true">&#9678;</span><div><strong>Hours</strong><br>Open 24 hours · every day<br><span class="ar">بخدمتكم 24 ساعة</span></div></li>
+            <li><span aria-hidden="true">&#9678;</span><div><strong>Find us</strong><br><a href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">Instagram</a> · <a href="https://linktr.ee/Boac.sa" target="_blank" rel="noopener">All links</a></div></li>
           </ul>
-          <a href="https://wa.me/966500000000" target="_blank" rel="noopener" class="btn btn-accent">Message on WhatsApp</a>
+          <div class="visit-cta">
+            <a class="btn btn-accent" href="https://www.google.com/maps?q=BOAC+Cafe+Khurais+Road+Al+Rawdah+Riyadh" target="_blank" rel="noopener">Get directions</a>
+            <button class="btn btn-ghost dark reserve-open" data-reserve>Reserve a table</button>
+          </div>
         </div>
         <div class="visit-map reveal">
-          <iframe
-            title="Map to BOAC Café, Khurais Road, Riyadh"
-            src="https://www.google.com/maps?q=BOAC+Cafe+Khurais+Road+Riyadh&output=embed"
+          <iframe title="Map to BOAC Café, Khurais Road, Riyadh"
+            src="https://maps.google.com/maps?q=BOAC%20Cafe%20Khurais%20Road%20Al%20Rawdah%20Riyadh&t=&z=15&output=embed"
             loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
     </section>
-
-    <!-- ============================================================= -->
-    <!-- CONTACT / RESERVATION                                          -->
-    <!-- ============================================================= -->
-    <section class="contact section" id="contact">
-      <div class="container contact-wrap">
-        <div class="section-head reveal">
-          <p class="eyebrow">Reserve a Table</p>
-          <h2>Book your seat</h2>
-          <p class="section-lead">Tell us when you're coming and we'll have a table ready. We'll
-            also open WhatsApp with your details pre-filled.</p>
-        </div>
-
-        <form class="contact-form reveal" id="reserve-form" novalidate>
-          <div class="field">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" autocomplete="name" required />
-            <span class="error" data-for="name"></span>
-          </div>
-          <div class="field">
-            <label for="phone">Phone</label>
-            <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" required />
-            <span class="error" data-for="phone"></span>
-          </div>
-          <div class="field">
-            <label for="date">Date &amp; time</label>
-            <input type="datetime-local" id="date" name="date" required />
-            <span class="error" data-for="date"></span>
-          </div>
-          <div class="field">
-            <label for="party">Party size</label>
-            <input type="number" id="party" name="party" min="1" max="30" value="2" required />
-            <span class="error" data-for="party"></span>
-          </div>
-          <div class="field field-full">
-            <label for="message">Message <span class="optional">(optional)</span></label>
-            <textarea id="message" name="message" rows="3"></textarea>
-          </div>
-          <button type="submit" class="btn btn-accent btn-full">Send Reservation</button>
-          <p class="form-success" id="form-success" role="status" hidden>
-            ✅ Thanks! We've opened WhatsApp with your reservation — hit send to confirm.
-          </p>
-        </form>
-      </div>
-    </section>
   </main>
 
-  <!-- ============================================================= -->
-  <!-- FOOTER                                                         -->
-  <!-- ============================================================= -->
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <span class="brand-name">BOAC <span class="brand-mark" aria-hidden="true">&#9992;</span></span>
-        <p>Specialty coffee &amp; fresh bakes.<br />Khurais Road, Al Rawdah, Riyadh.</p>
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot-word" aria-hidden="true">BOAC</div>
+    <div class="wrap foot-grid">
+      <div class="foot-brand">
+        <span class="brand-sun" aria-hidden="true">&#10042;</span>
+        <p><strong>BOAC</strong> — Because of a cup.<br>Al Rawdah, Khurais Road, Riyadh.</p>
       </div>
-      <div class="footer-links">
-        <h4>Explore</h4>
-        <ul>
-          <li><a href="#menu">Menu</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#visit">Visit Us</a></li>
-        </ul>
-      </div>
-      <div class="footer-links">
-        <h4>Hours</h4>
-        <p>Open 24 hours<br />Every day of the week</p>
-      </div>
-      <div class="footer-links">
-        <h4>Connect</h4>
-        <ul>
-          <li><a href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="https://linktr.ee/Boac.sa" target="_blank" rel="noopener">TikTok / Links</a></li>
-          <li><a href="https://wa.me/966500000000" target="_blank" rel="noopener">WhatsApp</a></li>
-        </ul>
-      </div>
+      <div class="foot-col"><h4>Explore</h4><a href="#about">Story</a><a href="#menu">Menu</a><a href="#feed">Feed</a><a href="#visit">Visit</a></div>
+      <div class="foot-col"><h4>Hours</h4><p>Open 24 hours<br>Every day</p></div>
+      <div class="foot-col"><h4>Connect</h4><a href="https://www.instagram.com/boac.sa/" target="_blank" rel="noopener">Instagram</a><a href="https://linktr.ee/Boac.sa" target="_blank" rel="noopener">TikTok · Links</a><button class="linklike reserve-open" data-reserve>Reserve</button></div>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; <span id="year"></span> BOAC Café · Riyadh. All rights reserved.</p>
-    </div>
+    <div class="wrap foot-bottom"><p>&copy; <span id="year"></span> BOAC Café · Riyadh</p><p>Made with <span aria-hidden="true">&#10042;</span> and good coffee</p></div>
   </footer>
 
-  <!-- Floating call button (thumb-reachable on mobile) -->
-  <a href="tel:+966500000000" class="fab-call" aria-label="Call BOAC Café">&#128222;</a>
-
-  <!-- Back to top -->
-  <button class="back-to-top" id="back-to-top" aria-label="Back to top" hidden>&#8593;</button>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
-    <button class="lightbox-close" id="lb-close" aria-label="Close">&times;</button>
-    <button class="lightbox-nav lightbox-prev" id="lb-prev" aria-label="Previous image">&#8249;</button>
-    <img class="lightbox-img" id="lb-img" src="" alt="" />
-    <button class="lightbox-nav lightbox-next" id="lb-next" aria-label="Next image">&#8250;</button>
+  <!-- ============ RESERVE MODAL ============ -->
+  <div class="modal" id="reserveModal" hidden role="dialog" aria-modal="true" aria-labelledby="reserveTitle">
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-card" role="document">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <p class="eyebrow">Reservation</p>
+      <h3 id="reserveTitle">Book your table</h3>
+      <p class="modal-sub">Tell us when you're coming — we'll open WhatsApp with the details ready to send.</p>
+      <form id="reserveForm" novalidate>
+        <div class="field"><label for="r-name">Name</label><input id="r-name" name="name" type="text" autocomplete="name" required><span class="err" data-for="name"></span></div>
+        <div class="field"><label for="r-phone">Phone</label><input id="r-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required><span class="err" data-for="phone"></span></div>
+        <div class="field"><label for="r-date">Date &amp; time</label><input id="r-date" name="date" type="datetime-local" required><span class="err" data-for="date"></span></div>
+        <div class="field"><label for="r-party">Party size</label><input id="r-party" name="party" type="number" min="1" max="30" value="2" required><span class="err" data-for="party"></span></div>
+        <div class="field field-full"><label for="r-msg">Message <span class="opt">(optional)</span></label><textarea id="r-msg" name="message" rows="2"></textarea></div>
+        <button type="submit" class="btn btn-accent btn-full">Send via WhatsApp</button>
+        <p class="form-ok" id="formOk" role="status" hidden>&#10042; Opening WhatsApp with your reservation — just hit send.</p>
+      </form>
+    </div>
   </div>
 
-  <script src="script.js?v=3"></script>
+  <button class="to-top" id="toTop" aria-label="Back to top" hidden>&#8593;</button>
+
+  <script src="script.js?v=4"></script>
 </body>
 </html>
